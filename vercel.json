@@ -1,0 +1,23 @@
+{
+  "buildCommand": "echo 'Static deployment'",
+  "outputDirectory": ".",
+  "framework": "static",
+  "env": [
+    {
+      "key": "HUGGINGFACE_API_KEY",
+      "value": "@huggingface_api_key"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ],
+  "functions": {
+    "api/**/*.js": {
+      "maxDuration": 60,
+      "memory": 1024
+    }
+  }
+}

@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emma Tech - AI-Powered Learning Platform</title>
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM via CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+    
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            background-color: rgb(3, 7, 18);
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgb(15, 23, 42);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgb(59, 130, 246);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgb(96, 165, 250);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .animate-slideUp {
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .delay-1000 {
+            animation-delay: 1000ms;
+        }
+        
+        ::selection {
+            background-color: rgb(59, 130, 246);
+            color: white;
+        }
+        
+        a {
+            color: rgb(96, 165, 250);
+            transition: color 0.2s;
+        }
+        
+        a:hover {
+            color: rgb(147, 197, 253);
+        }
+        
+        input, textarea {
+            background-color: rgba(51, 65, 85, 0.5);
+            border: 1px solid rgb(51, 65, 85);
+            border-radius: 0.5rem;
+            color: white;
+            transition: all 0.2s;
+        }
+        
+        input::placeholder, textarea::placeholder {
+            color: rgb(100, 116, 139);
+        }
+        
+        input:focus, textarea:focus {
+            border-color: rgb(59, 130, 246);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950">
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // Icon components using lucide
+        const Sparkles = (props) => <lucide.Sparkles {...props} />;
+        const Menu = (props) => <lucide.Menu {...props} />;
+        const X = (props) => <lucide.X {...props} />;
+        const LogOut = (props) => <lucide.LogOut {...props} />;
+        const BookOpen = (props) => <lucide.BookOpen {...props} />;
+        const Zap = (props) => <lucide.Zap {...props} />;
+        const Code = (props) => <lucide.Code {...props} />;
+        const Shield = (props) => <lucide.Shield {...props} />;
+        const TrendingUp = (props) => <lucide.TrendingUp {...props} />;
+        const Play = (props) => <lucide.Play {...props} />;
+        const Check = (props) => <lucide.Check {...props} />;
+        const ArrowRight = (props) => <lucide.ArrowRight {...props} />;
+        const Plus = (props) => <lucide.Plus {...props} />;
+        const Clock = (props) => <lucide.Clock {...props} />;
+        const Target = (props) => <lucide.Target {...props} />;
+        const Layers = (props) => <lucide.Layers {...props} />;
+        const Terminal = (props) => <lucide.Terminal {...props} />;
+        const Bell = (props) => <lucide.Bell {...props} />;
+        const User = (props) => <lucide.User {...props} />;
+        const ChevronDown = (props) => <lucide.ChevronDown {...props} />;
+        const AlertCircle = (props) => <lucide.AlertCircle {...props} />;
+        
+        const COURSES_LIBRARY = {
+            python: {
+                id: 'python-fundamentals',
+                title: 'Python Fundamentals',
+                description: 'Master Python programming from basics to advanced concepts',
+                category: 'Coding',
+                level: 'Beginner',
+                progress: 45,
+                modules: [
+                    { id: 'py-1', title: 'Variables & Data Types', lessons: 8, completed: 4 },
+                    { id: 'py-2', title: 'Control Flow', lessons: 10, completed: 0 },
+                    { id: 'py-3', title: 'Functions & Modules', lessons: 12, completed: 0 }
+                ]
+            },
+            react: {
+                id: 'react-dev',
+                title: 'React Development',
+                description: 'Build modern web applications with React',
+                category: 'Software Development',
+                level: 'Intermediate',
+                progress: 0,
+                modules: [
+                    { id: 'react-1', title: 'React Fundamentals', lessons: 10, completed: 0 },
+                    { id: 'react-2', title: 'State Management', lessons: 12, completed: 0 }
+                ]
+            },
+            cybersecurity: {
+                id: 'cybersec-101',
+                title: 'Cybersecurity Fundamentals',
+                description: 'Essential security concepts and threat analysis',
+                category: 'Cybersecurity & SOC',
+                level: 'Beginner',
+                progress: 0,
+                modules: [
+                    { id: 'cyber-1', title: 'Network Security Basics', lessons: 8, completed: 0 },
+                    { id: 'cyber-2', title: 'Threat Modeling', lessons: 10, completed: 0 }
+                ]
+            }
+        };
+        
+        const SAMPLE_LESSONS = {
+            'py-1-1': {
+                id: 'py-1-1',
+                title: 'Introduction to Variables',
+                content: `# Understanding Variables in Python
+
+## What is a Variable?
+A variable is a named container that stores a value in memory. It allows you to reference and manipulate data throughout your program.
+
+## Variable Naming Rules
+- Must start with a letter or underscore
+- Can contain letters, numbers, and underscores
+- Are case-sensitive
+- Should be descriptive
+
+## Examples
+\`\`\`python
+name = "Alice"
+age = 25
+height = 5.7
+is_student = True
+\`\`\`
+
+## Common Data Types
+- **int**: Integer numbers (5, -10, 0)
+- **float**: Decimal numbers (3.14, -2.5)
+- **str**: Text strings ("Hello", 'World')
+- **bool**: True or False values
+
+## Type Conversion
+You can convert between types:
+\`\`\`python
+num = int("42")
+text = str(100)
+decimal = float(10)
+\`\`\`
+
+## Practice
+Try assigning different types of data to variables and printing them!`,
+                codeTemplate: `# Start coding here!\nname = "Your Name"\nage = 0\n\nprint(f"Hello, {name}!")\nprint(f"You are {age} years old")`
+            }
+        };
+        
+        function EmmatechPlatform() {
+            const [currentUser, setCurrentUser] = useState(null);
+            const [currentPage, setCurrentPage] = useState('landing');
+            const [enrolledCourses, setEnrolledCourses] = useState([]);
+            const [menuOpen, setMenuOpen] = useState(false);
+            const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+            const [generatedPath, setGeneratedPath] = useState(null);
+            const [isGenerating, setIsGenerating] = useState(false);
+            const [selectedCourse, setSelectedCourse] = useState(null);
+            const [selectedModule, setSelectedModule] = useState(null);
+            const [selectedLesson, setSelectedLesson] = useState(null);
+            const [lessonProgress, setLessonProgress] = useState({});
+            const [dailyStreak, setDailyStreak] = useState(7);
+            const [xpPoints, setXpPoints] = useState(2450);
+            const [apiError, setApiError] = useState(null);
+
+            const handleLogout = () => {
+                setCurrentUser(null);
+                setCurrentPage('landing');
+                setMenuOpen(false);
+                setProfileMenuOpen(false);
+            };
+
+            const handleEnrollCourse = (courseId) => {
+                if (!enrolledCourses.includes(courseId)) {
+                    setEnrolledCourses([...enrolledCourses, courseId]);
+                }
+            };
+
+            const handleGeneratePath = async (skillPrompt) => {
+                setIsGenerating(true);
+                setApiError(null);
+                
+                try {
+                    // Try to call the API
+                    const response = await fetch('/api/generate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ skill: skillPrompt }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    
+                    const path = {
+                        skill: skillPrompt,
+                        modules: data.modules || [],
+                        totalHours: data.totalHours || 0,
+                        difficulty: data.difficulty || 'Intermediate',
+                        aiGenerated: true
+                    };
+                    
+                    setGeneratedPath(path);
+                } catch (error) {
+                    console.error('Error generating learning path:', error);
+                    setApiError(error.message);
+                    
+                    // Fallback to mock data
+                    const fallbackPath = {
+                        skill: skillPrompt,
+                        modules: [
+                            { title: `${skillPrompt} Fundamentals`, lessons: 8, estimatedHours: 12 },
+                            { title: `Core Concepts & Architecture`, lessons: 10, estimatedHours: 15 },
+                            { title: `Hands-On Projects`, lessons: 6, estimatedHours: 20 },
+                            { title: `Advanced Patterns`, lessons: 7, estimatedHours: 18 }
+                        ],
+                        totalHours: 65,
+                        difficulty: 'Intermediate',
+                        isFallback: true
+                    };
+                    setGeneratedPath(fallbackPath);
+                } finally {
+                    setIsGenerating(false);
+                }
+            };
+
+            const handleMarkComplete = () => {
+                if (selectedLesson) {
+                    const key = `${selectedModule}-${selectedLesson}`;
+                    setLessonProgress({ ...lessonProgress, [key]: true });
+                    setXpPoints(xpPoints + 100);
+                    setTimeout(() => alert('Great job! You earned 100 XP! 🎉'), 300);
+                }
+            };
+
+            const LandingPage = () => (
+                <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950">
+                    <nav className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-blue-500/20">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-violet-500 rounded-lg flex items-center justify-center">
+                                    <Sparkles className="w-6 h-6 text-white" />
+                                </div>
+                                <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
+                                    Emma Tech
+                                </span>
+                            </div>
+                            
+                            <div className="flex items-center gap-4">
+                                <button
+                                    onClick={() => setCurrentPage('signup')}
+                                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-violet-500 text-white text-sm font-medium hover:shadow-lg hover:shadow-blue-500/50 transition"
+                                >
+                                    Get Started
+                                </button>
+                                <button
+                                    onClick={() => setMenuOpen(!menuOpen)}
+                                    className="md:hidden text-slate-300"
+                                >
+                                    {menuOpen ? <X size={24} /> : <Menu size={24} />}
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <div className="relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-violet-500/10 pointer-events-none" />
+                        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+                        <div className="absolute bottom-0 right-20 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
+
+                        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
+                            <div className="text-center space-y-8">
+                                <div className="inline-block px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-full">
+                                    <span className="text-blue-400 text-sm font-medium flex items-center gap-2 justify-center">
+                                        <Zap size={16} /> Advanced Learning Platform
+                                    </span>
+                                </div>
+
+                                <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
+                                    Learn <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-blue-400 bg-clip-text text-transparent">Code & Security</span> Like a <span className="text-violet-400">Pro</span>
+                                </h1>
+
+                                <p className="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+                                    Master software development, cybersecurity, and advanced tech skills through interactive lessons, AI-powered learning paths, and real-world projects.
+                                </p>
+
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                                    <button
+                                        onClick={() => {
+                                            setCurrentPage('signup');
+                                            window.scrollTo(0, 0);
+                                        }}
+                                        className="px-8 py-4 bg-gradient-to-r from-blue-500 to-violet-500 text-white rounded-lg font-semibold hover:shadow-2xl hover:shadow-blue-500/50 transition transform hover:scale-105"
+                                    >
+                                        Start Learning Now
+                                    </button>
+                                    <button
+                                        onClick={() => setCurrentPage('landing')}
+                                        className="px-8 py-4 border border-blue-500/50 text-blue-400 rounded-lg font-semibold hover:bg-blue-500/10 transition"
+                                    >
+                                        Explore Courses
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                        <h2 className="text-3xl font-bold text-white mb-12 text-center">Why Choose Emma Tech?</h2>
+                        
+                        <div className="grid md:grid-cols-3 gap-6">
+                            {[
+                                { icon: Code, title: 'Coding Hub', desc: 'Python, JavaScript, Data Structures & Algorithms' },
+                                { icon: Layers, title: 'Software Dev', desc: 'Git, CI/CD, System Design & Architecture' },
+                                { icon: Shield, title: 'Cybersecurity', desc: 'Network Security, SOC, Threat Hunting & Analysis' },
+                                { icon: Sparkles, title: 'AI Powered', desc: 'AI-generated learning paths tailored to you' },
+                                { icon: TrendingUp, title: 'Gamification', desc: 'XP, streaks, and achievement badges' },
+                                { icon: Play, title: 'Interactive', desc: 'Built-in code editors and practical exercises' }
+                            ].map((feature, i) => {
+                                const FeatureIcon = feature.icon;
+                                return (
+                                    <div key={i} className="group p-6 rounded-xl bg-slate-900/40 border border-slate-700/50 hover:border-blue-500/50 transition hover:bg-slate-900/60 hover:shadow-lg hover:shadow-blue-500/10">
+                                        <FeatureIcon className="w-10 h-10 text-blue-400 mb-4 group-hover:text-violet-400 transition" />
+                                        <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
+                                        <p className="text-slate-400 text-sm">{feature.desc}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-800">
+                        <h2 className="text-3xl font-bold text-white mb-12 text-center">Featured Courses</h2>
+                        
+                        <div className="grid md:grid-cols-3 gap-6">
+                            {Object.values(COURSES_LIBRARY).map((course) => (
+                                <div key={course.id} className="group rounded-xl overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 hover:border-blue-500/50 transition">
+                                    <div className="h-32 bg-gradient-to-br from-blue-500/20 to-violet-500/20 flex items-center justify-center group-hover:from-blue-500/30 group-hover:to-violet-500/30 transition">
+                                        <BookOpen className="w-12 h-12 text-blue-400 opacity-50" />
+                                    </div>
+                                    
+                                    <div className="p-6 space-y-4">
+                                        <div>
+                                            <h3 className="text-lg font-bold text-white">{course.title}</h3>
+                                            <p className="text-sm text-blue-400 mt-1">{course.category}</p>
+                                        </div>
+                                        <p className="text-slate-400 text-sm">{course.description}</p>
+                                        
+                                        <div className="flex justify-between items-center pt-4">
+                                            <span className="text-xs text-slate-500">{course.modules.length} Modules</span>
+                                            <button
+                                                onClick={() => {
+                                                    handleEnrollCourse(course.id);
+                                                    setCurrentPage('signup');
+                                                }}
+                                                className="px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white transition text-sm font-medium"
+                                            >
+                                                Enroll
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const SignupPage = () => {
+                const [email, setEmail] = useState('');
+                const [password, setPassword] = useState('');
+                const [name, setName] = useState('');
+                const [isLogin, setIsLogin] = useState(false);
+
+                const handleSubmit = (e) => {
+                    e.preventDefault();
+                    if (email && password && name) {
+                        setCurrentUser({ email, name, role: 'student' });
+                        setCurrentPage('dashboard');
+                        setEmail('');
+                        setPassword('');
+                        setName('');
+                    }
+                };
+
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 flex items-center justify-center px-4">
+                        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/5 rounded-full blur-3xl" />
+                        <div className="absolute bottom-20 right-10 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl" />
+
+                        <div className="relative w-full max-w-md">
+                            <button
+                                onClick={() => setCurrentPage('landing')}
+                                className="absolute -top-12 left-0 text-slate-400 hover:text-blue-400 transition flex items-center gap-2"
+                            >
+                                <ArrowRight size={20} className="rotate-180" /> Back
+                            </button>
+
+                            <div className="space-y-8">
+                                <div className="text-center">
+                                    <div className="inline-block mb-4 w-12 h-12 bg-gradient-to-br from-blue-400 to-violet-500 rounded-lg flex items-center justify-center">
+                                        <Sparkles className="w-7 h-7 text-white" />
+                                    </div>
+                                    <h1 className="text-3xl font-bold text-white">{isLogin ? 'Welcome Back' : 'Join Emma Tech'}</h1>
+                                    <p className="text-slate-400 mt-2">Start your learning journey today</p>
+                                </div>
+
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    {!isLogin && (
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-300 mb-2">Full Name</label>
+                                            <input
+                                                type="text"
+                                                value={name}
+                                                onChange={(e) => setName(e.target.value)}
+                                                placeholder="John Doe"
+                                                className="w-full px-4 py-3 rounded-lg text-white"
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-300 mb-2">Email Address</label>
+                                        <input
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            placeholder="you@example.com"
+                                            className="w-full px-4 py-3 rounded-lg text-white"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+                                        <input
+                                            type="password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            placeholder="••••••••"
+                                            className="w-full px-4 py-3 rounded-lg text-white"
+                                        />
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-violet-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition mt-6"
+                                    >
+                                        {isLogin ? 'Sign In' : 'Create Account'}
+                                    </button>
+                                </form>
+
+                                <div className="text-center">
+                                    <p className="text-slate-400 text-sm">
+                                        {isLogin ? "Don't have an account? " : 'Already have an account? '}
+                                        <button
+                                            onClick={() => setIsLogin(!isLogin)}
+                                            className="text-blue-400 hover:text-blue-300 font-medium"
+                                        >
+                                            {isLogin ? 'Sign up' : 'Sign in'}
+                                        </button>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const DashboardPage = () => (
+                <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950">
+                    <nav className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-blue-500/20">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                            <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-8">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-violet-500 rounded-lg flex items-center justify-center">
+                                            <Sparkles className="w-6 h-6 text-white" />
+                                        </div>
+                                        <span className="text-lg font-bold text-white">Emma Tech</span>
+                                    </div>
+
+                                    <div className="hidden md:flex gap-6">
+                                        <button onClick={() => setCurrentPage('dashboard')} className="text-slate-300 hover:text-blue-400 transition text-sm">Dashboard</button>
+                                        <button onClick={() => setCurrentPage('browse-courses')} className="text-slate-300 hover:text-blue-400 transition text-sm">Explore</button>
+                                        <button onClick={() => setCurrentPage('ai-generator')} className="text-slate-300 hover:text-blue-400 transition text-sm flex items-center gap-2">
+                                            <Sparkles size={16} /> AI Generator
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-4">
+                                    <button className="p-2 hover:bg-slate-800 rounded-lg transition text-slate-400 hover:text-slate-300">
+                                        <Bell size={20} />
+                                    </button>
+
+                                    <div className="relative">
+                                        <button
+                                            onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                                            className="flex items-center gap-2 px-3 py-2 hover:bg-slate-800 rounded-lg transition"
+                                        >
+                                            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-violet-500 rounded-full" />
+                                            <span className="text-sm text-white hidden sm:inline">{currentUser.name}</span>
+                                            <ChevronDown size={16} className="text-slate-400" />
+                                        </button>
+
+                                        {profileMenuOpen && (
+                                            <div className="absolute top-full right-0 mt-2 w-48 bg-slate-900 border border-slate-700 rounded-lg overflow-hidden shadow-xl">
+                                                <button className="w-full px-4 py-3 text-left text-slate-300 hover:bg-slate-800 transition text-sm flex items-center gap-2 border-b border-slate-700">
+                                                    <User size={16} /> Profile Settings
+                                                </button>
+                                                <button
+                                                    onClick={handleLogout}
+                                                    className="w-full px-4 py-3 text-left text-red-400 hover:bg-slate-800 transition text-sm flex items-center gap-2"
+                                                >
+                                                    <LogOut size={16} /> Logout
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                        <div className="mb-12">
+                            <h1 className="text-4xl font-bold text-white mb-2">Welcome back, {currentUser.name}! 👋</h1>
+                            <p className="text-slate-400">Continue learning and master new skills</p>
+                        </div>
+
+                        <div className="grid md:grid-cols-4 gap-4 mb-12">
+                            {[
+                                { icon: TrendingUp, label: 'Total XP', value: xpPoints.toLocaleString(), color: 'from-blue-500 to-blue-600' },
+                                { icon: Clock, label: 'Daily Streak', value: dailyStreak, suffix: ' days', color: 'from-orange-500 to-red-600' },
+                                { icon: BookOpen, label: 'Courses', value: enrolledCourses.length, suffix: ' enrolled', color: 'from-violet-500 to-violet-600' },
+                                { icon: Target, label: 'Lessons', value: '24', suffix: ' completed', color: 'from-green-500 to-green-600' }
+                            ].map((stat, i) => {
+                                const StatIcon = stat.icon;
+                                return (
+                                    <div key={i} className={`p-6 rounded-xl bg-gradient-to-br ${stat.color} bg-opacity-10 border border-slate-700 hover:border-slate-500 transition`}>
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="text-slate-400 text-sm">{stat.label}</p>
+                                                <p className="text-2xl font-bold text-white mt-2">{stat.value}{stat.suffix || ''}</p>
+                                            </div>
+                                            <StatIcon className="w-8 h-8 text-slate-500" />
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <div className="mb-12">
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-2xl font-bold text-white">Your Learning Path</h2>
+                                <button
+                                    onClick={() => setCurrentPage('browse-courses')}
+                                    className="text-blue-400 hover:text-blue-300 flex items-center gap-2 text-sm font-medium"
+                                >
+                                    <Plus size={16} /> Add Course
+                                </button>
+                            </div>
+
+                            {enrolledCourses.length === 0 ? (
+                                <div className="p-12 rounded-xl border border-slate-700 border-dashed text-center">
+                                    <BookOpen className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+                                    <h3 className="text-lg font-semibold text-slate-300 mb-2">No Courses Yet</h3>
+                                    <p className="text-slate-500 mb-6">Start your learning journey by enrolling in a course</p>
+                                    <button
+                                        onClick={() => setCurrentPage('browse-courses')}
+                                        className="px-6 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition font-medium"
+                                    >
+                                        Explore Courses
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    {enrolledCourses.map((courseId) => {
+                                        const course = Object.values(COURSES_LIBRARY).find(c => c.id === courseId);
+                                        if (!course) return null;
+                                        return (
+                                            <div key={courseId} className="group p-6 rounded-xl bg-slate-900/40 border border-slate-700/50 hover:border-blue-500/50 transition">
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div>
+                                                        <h3 className="text-lg font-bold text-white">{course.title}</h3>
+                                                        <p className="text-sm text-blue-400 mt-1">{course.category}</p>
+                                                    </div>
+                                                    <span className="text-xs px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full">{course.level}</span>
+                                                </div>
+
+                                                <div className="space-y-3">
+                                                    <div>
+                                                        <div className="flex justify-between items-center mb-2">
+                                                            <span className="text-xs text-slate-400">Progress</span>
+                                                            <span className="text-sm font-semibold text-blue-400">{course.progress}%</span>
+                                                        </div>
+                                                        <div className="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                                                            <div
+                                                                className="h-full bg-gradient-to-r from-blue-500 to-violet-500 transition-all duration-300"
+                                                                style={{ width: `${course.progress}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedCourse(courseId);
+                                                            setSelectedModule(course.modules[0]?.id);
+                                                            setCurrentPage('tutorial');
+                                                        }}
+                                                        className="w-full mt-4 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white transition font-medium text-sm"
+                                                    >
+                                                        Continue Learning
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="p-8 rounded-xl border border-blue-500/30 bg-blue-500/5">
+                            <div className="flex items-start gap-4">
+                                <Sparkles className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-bold text-white mb-2">Generate AI Learning Path</h3>
+                                    <p className="text-slate-400 text-sm mb-4">
+                                        Describe a skill you want to learn and our AI will create a personalized roadmap with modules, lessons, and resources.
+                                    </p>
+                                    <button
+                                        onClick={() => setCurrentPage('ai-generator')}
+                                        className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium text-sm transition"
+                                    >
+                                        Try AI Generator
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const AIGeneratorPage = () => {
+                const [prompt, setPrompt] = useState('');
+
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950">
+                        <nav className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-blue-500/20">
+                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() => setCurrentPage('dashboard')}
+                                        className="text-slate-400 hover:text-white transition"
+                                    >
+                                        <ArrowRight size={20} className="rotate-180" />
+                                    </button>
+                                    <span className="text-lg font-bold text-white">AI Learning Path Generator</span>
+                                </div>
+                            </div>
+                        </nav>
+
+                        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                            {!generatedPath ? (
+                                <div className="space-y-8">
+                                    <div className="text-center mb-12">
+                                        <div className="inline-block p-3 bg-blue-500/20 rounded-lg mb-4">
+                                            <Sparkles className="w-8 h-8 text-blue-400" />
+                                        </div>
+                                        <h1 className="text-4xl font-bold text-white mb-3">What do you want to learn?</h1>
+                                        <p className="text-slate-400 text-lg">
+                                            Describe any skill or topic, and our AI will generate a personalized learning roadmap for you.
+                                        </p>
+                                    </div>
+
+                                    {apiError && (
+                                        <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/50 flex gap-3">
+                                            <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                                            <div>
+                                                <p className="text-sm text-amber-300 font-medium">API Notice</p>
+                                                <p className="text-xs text-amber-200/80">Using fallback learning path. Check your API configuration.</p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <form
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            if (prompt.trim()) handleGeneratePath(prompt);
+                                        }}
+                                        className="space-y-4"
+                                    >
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-300 mb-3">Learning Goal</label>
+                                            <textarea
+                                                value={prompt}
+                                                onChange={(e) => setPrompt(e.target.value)}
+                                                placeholder="E.g., 'Learn React and build production-ready web applications' or 'Become a SOC analyst and understand threat hunting'"
+                                                className="w-full px-4 py-4 rounded-lg text-white resize-none h-24"
+                                            />
+                                        </div>
+
+                                        <button
+                                            type="submit"
+                                            disabled={!prompt.trim() || isGenerating}
+                                            className="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-violet-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        >
+                                            {isGenerating ? (
+                                                <>
+                                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                                    Generating Your Path...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Sparkles size={20} /> Generate Learning Path
+                                                </>
+                                            )}
+                                        </button>
+                                    </form>
+
+                                    <div className="grid md:grid-cols-3 gap-4 pt-8 border-t border-slate-700">
+                                        {[
+                                            'React Development',
+                                            'Python Machine Learning',
+                                            'Network Security & SOC'
+                                        ].map((example, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => {
+                                                    setPrompt(example);
+                                                    setTimeout(() => handleGeneratePath(example), 100);
+                                                }}
+                                                className="p-4 rounded-lg border border-slate-700 hover:border-blue-500/50 hover:bg-slate-800/50 transition text-left group"
+                                            >
+                                                <p className="text-slate-400 text-xs mb-2">EXAMPLE</p>
+                                                <p className="text-white font-medium group-hover:text-blue-400 transition">{example}</p>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-8">
+                                    <button
+                                        onClick={() => {
+                                            setGeneratedPath(null);
+                                            setPrompt('');
+                                            setApiError(null);
+                                        }}
+                                        className="flex items-center gap-2 text-blue-400 hover:text-blue-300 font-medium mb-4"
+                                    >
+                                        <ArrowRight size={16} className="rotate-180" /> Generate Another Path
+                                    </button>
+
+                                    {generatedPath.isFallback && (
+                                        <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/50 flex gap-3">
+                                            <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                                            <div>
+                                                <p className="text-sm text-amber-300 font-medium">Using Fallback Path</p>
+                                                <p className="text-xs text-amber-200/80">This is a generated template. Your AI API will provide personalized content.</p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="space-y-6">
+                                        <div>
+                                            <h2 className="text-3xl font-bold text-white mb-2">Your Learning Path</h2>
+                                            <p className="text-slate-400">
+                                                Master <span className="text-blue-400 font-semibold">{generatedPath.skill}</span>
+                                            </p>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                            <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700">
+                                                <p className="text-slate-500 text-xs mb-1">MODULES</p>
+                                                <p className="text-2xl font-bold text-white">{generatedPath.modules.length}</p>
+                                            </div>
+                                            <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700">
+                                                <p className="text-slate-500 text-xs mb-1">LESSONS</p>
+                                                <p className="text-2xl font-bold text-white">{generatedPath.modules.reduce((sum, m) => sum + (m.lessons || 0), 0)}</p>
+                                            </div>
+                                            <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700">
+                                                <p className="text-slate-500 text-xs mb-1">DIFFICULTY</p>
+                                                <p className="text-lg font-bold text-blue-400">{generatedPath.difficulty}</p>
+                                            </div>
+                                            <div className="p-4 rounded-lg bg-slate-800/50 border border-slate-700">
+                                                <p className="text-slate-500 text-xs mb-1">DURATION</p>
+                                                <p className="text-2xl font-bold text-white">{generatedPath.totalHours}h</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <h3 className="text-xl font-bold text-white">Learning Modules</h3>
+                                            {generatedPath.modules.map((module, i) => (
+                                                <div key={i} className="p-6 rounded-lg bg-slate-900/40 border border-slate-700/50 hover:border-blue-500/50 transition">
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center gap-3 mb-2">
+                                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center text-white font-bold text-sm">
+                                                                    {i + 1}
+                                                                </div>
+                                                                <h4 className="text-lg font-semibold text-white">{module.title}</h4>
+                                                            </div>
+                                                            <p className="text-slate-400 text-sm">
+                                                                {module.lessons || 8} lessons • {module.estimatedHours || 12} hours
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <button
+                                            onClick={() => {
+                                                handleEnrollCourse(Object.values(COURSES_LIBRARY)[0].id);
+                                                setCurrentPage('dashboard');
+                                            }}
+                                            className="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-violet-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition mt-6"
+                                        >
+                                            Start Learning
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
+            };
+
+            const BrowseCoursesPage = () => (
+                <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950">
+                    <nav className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-blue-500/20">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() => setCurrentPage('dashboard')}
+                                    className="text-slate-400 hover:text-white transition"
+                                >
+                                    <ArrowRight size={20} className="rotate-180" />
+                                </button>
+                                <span className="text-lg font-bold text-white">Explore Courses</span>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                        <h1 className="text-3xl font-bold text-white mb-8">Our Course Collection</h1>
+
+                        <div className="grid md:grid-cols-3 gap-6">
+                            {Object.entries(COURSES_LIBRARY).map(([key, course]) => (
+                                <div
+                                    key={course.id}
+                                    className="group rounded-xl overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 hover:border-blue-500/50 transition hover:shadow-lg hover:shadow-blue-500/10"
+                                >
+                                    <div className="h-40 bg-gradient-to-br from-blue-500/20 to-violet-500/20 flex items-center justify-center group-hover:from-blue-500/30 group-hover:to-violet-500/30 transition">
+                                        <BookOpen className="w-16 h-16 text-blue-400 opacity-50" />
+                                    </div>
+
+                                    <div className="p-6 space-y-4">
+                                        <div>
+                                            <h3 className="text-lg font-bold text-white">{course.title}</h3>
+                                            <p className="text-sm text-blue-400 mt-1">{course.category}</p>
+                                        </div>
+
+                                        <p className="text-slate-400 text-sm">{course.description}</p>
+
+                                        <div className="flex items-center justify-between text-xs text-slate-500">
+                                            <span>{course.modules.length} modules</span>
+                                            <span className="px-2 py-1 bg-slate-700/50 rounded">{course.level}</span>
+                                        </div>
+
+                                        <button
+                                            onClick={() => {
+                                                handleEnrollCourse(course.id);
+                                                setCurrentPage('dashboard');
+                                            }}
+                                            className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-violet-500 text-white hover:shadow-lg hover:shadow-blue-500/50 transition font-medium"
+                                        >
+                                            {enrolledCourses.includes(course.id) ? 'View Course' : 'Enroll Now'}
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const TutorialPage = () => {
+                if (!selectedCourse || !selectedModule) return null;
+                
+                const course = Object.values(COURSES_LIBRARY).find(c => c.id === selectedCourse);
+                const module = course?.modules.find(m => m.id === selectedModule);
+                const lesson = SAMPLE_LESSONS['py-1-1'];
+
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950">
+                        <nav className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-md border-b border-blue-500/20">
+                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() => setCurrentPage('dashboard')}
+                                        className="text-slate-400 hover:text-white transition"
+                                    >
+                                        <ArrowRight size={20} className="rotate-180" />
+                                    </button>
+                                    <div>
+                                        <p className="text-xs text-slate-500">{course.title}</p>
+                                        <p className="text-white font-semibold">{lesson.title}</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm text-slate-400">Progress</span>
+                                        <div className="w-24 h-2 bg-slate-700 rounded-full overflow-hidden">
+                                            <div className="h-full bg-gradient-to-r from-blue-500 to-violet-500 w-1/3" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </nav>
+
+                        <div className="flex flex-col lg:flex-row h-[calc(100vh-73px)]">
+                            <div className="flex-1 overflow-y-auto border-r border-slate-700 p-8">
+                                <div className="max-w-2xl space-y-6">
+                                    <div>
+                                        <span className="inline-block px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-medium mb-4">
+                                            Module 1 • Lesson 1
+                                        </span>
+                                        <h1 className="text-3xl font-bold text-white mb-2">{lesson.title}</h1>
+                                    </div>
+
+                                    <div className="prose prose-invert max-w-none">
+                                        {lesson.content.split('\n\n').map((paragraph, i) => {
+                                            if (paragraph.startsWith('# ')) {
+                                                return (
+                                                    <h2 key={i} className="text-2xl font-bold text-white mt-6 mb-4">
+                                                        {paragraph.replace('# ', '')}
+                                                    </h2>
+                                                );
+                                            }
+                                            if (paragraph.startsWith('## ')) {
+                                                return (
+                                                    <h3 key={i} className="text-xl font-semibold text-blue-400 mt-4 mb-3">
+                                                        {paragraph.replace('## ', '')}
+                                                    </h3>
+                                                );
+                                            }
+                                            if (paragraph.startsWith('- ')) {
+                                                return (
+                                                    <ul key={i} className="space-y-2 text-slate-300">
+                                                        {paragraph.split('\n').map((item, j) => (
+                                                            <li key={j} className="flex gap-3">
+                                                                <span className="text-blue-400 mt-1">•</span>
+                                                                <span>{item.replace('- ', '')}</span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                );
+                                            }
+                                            if (paragraph.startsWith('`')) {
+                                                return (
+                                                    <div key={i} className="bg-slate-900/50 border border-slate-700 rounded-lg p-4 overflow-x-auto">
+                                                        <code className="text-slate-300 font-mono text-sm">
+                                                            {paragraph.replace(/`/g, '')}
+                                                        </code>
+                                                    </div>
+                                                );
+                                            }
+                                            return (
+                                                <p key={i} className="text-slate-300 leading-relaxed">
+                                                    {paragraph}
+                                                </p>
+                                            );
+                                        })}
+                                    </div>
+
+                                    <div className="flex gap-3 pt-6 border-t border-slate-700">
+                                        <button
+                                            onClick={handleMarkComplete}
+                                            className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-green-500/50 transition flex items-center justify-center gap-2"
+                                        >
+                                            <Check size={20} /> Mark as Complete
+                                        </button>
+                                        <button className="px-6 py-3 border border-slate-600 text-slate-300 rounded-lg hover:border-slate-500 transition">
+                                            Next Lesson
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex-1 bg-slate-900 border-l border-slate-700 p-6 flex flex-col">
+                                <div className="space-y-4 flex-1 flex flex-col">
+                                    <div>
+                                        <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+                                            <Terminal size={20} className="text-blue-400" /> Code Practice
+                                        </h3>
+                                    </div>
+
+                                    <textarea
+                                        defaultValue={lesson.codeTemplate}
+                                        className="flex-1 bg-slate-950 border border-slate-700 rounded-lg p-4 text-slate-300 font-mono text-sm resize-none"
+                                        placeholder="Write your code here..."
+                                    />
+
+                                    <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-violet-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition flex items-center justify-center gap-2">
+                                        <Play size={18} /> Run Code
+                                    </button>
+
+                                    <div className="bg-slate-950 border border-slate-700 rounded-lg p-4 text-slate-400 text-sm font-mono h-32 overflow-y-auto">
+                                        <p>Output will appear here...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            if (!currentUser) {
+                return currentPage === 'landing' ? <LandingPage /> : <SignupPage />;
+            }
+
+            switch (currentPage) {
+                case 'landing':
+                    return <LandingPage />;
+                case 'signup':
+                    return <SignupPage />;
+                case 'dashboard':
+                    return <DashboardPage />;
+                case 'ai-generator':
+                    return <AIGeneratorPage />;
+                case 'browse-courses':
+                    return <BrowseCoursesPage />;
+                case 'tutorial':
+                    return <TutorialPage />;
+                default:
+                    return <DashboardPage />;
+            }
+        }
+        
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<EmmatechPlatform />);
+    </script>
+</body>
+</html>
